@@ -12,7 +12,7 @@ The source of the Boxstarter website can be found in the [boxstarter.org reposit
 * Remote machine deployments.
 * Integrates with Hyper-V and Windows Azure VMs supporting checkpoint restore and creation.
 * Installation packages build on top of [Chocolatey](https://chocolatey.org) package management.
-* Easily install with just a [Gist and the Boxstarter Web Launcher](https://boxstarter.org/WebLauncher) or [create a private repository on a thumb drive or network share](https://boxstarter.org/InstallingPackages#InstallFromShare).
+* Easily install with just a [Gist and the Boxstarter Web Launcher](https://boxstarter.org/weblauncher) or [create a private repository on a thumb drive or network share](https://boxstarter.org/installingpackages#running-an-installation-from-a-network-share-or-external-media).
 * See the [supported operating systems](https://docs.chocolatey.org/en-us/chocolatey-components-dependencies-and-support-lifecycle#supported-windows-versions) but may work on older.
 * Lots of Windows configuration utilities including installing critical updates, changing Windows Explorer options, and more.
 
