@@ -43,6 +43,7 @@ Properties {
 Task default -depends Build
 Task Build -depends Run-GitVersion, Build-Clickonce, Get-ChocolateyNugetPkg, Test, Package
 Task Deploy -depends Build, Publish-Clickonce -description 'Versions, packages and pushes'
+Task Compile-Modules-Only -depends Clean-Artifacts, Compile-Modules # just for testing, probably remove once done!
 Task Package -depends Clean-Artifacts, Version-Module, Get-ChocolateyNugetPkg, Create-ModuleZipForRemoting, Pack-Chocolatey, Package-DownloadZip -description 'Versions the psd1 and packs the module and example package'
 Task All-Tests -depends Test, Integration-Test
 Task Quick-Deploy -depends Run-GitVersion, Build-Clickonce, Package, Publish-Clickonce
@@ -263,12 +264,66 @@ Task Get-ChocolateyNugetPkg {
 }
 
 Task Compile-Modules {
-    # TODO: implement join-script-to-psm1 logic
+    $tempNuGetDirectory = "$basedir/buildArtifacts/tempNuGetFolders"
+    $exclude = @('bin', 'obj', '*.pssproj')
+
+    foreach ($mod in $boxstarterModules) {
+        $modSourceDir = "${basedir}/Boxstarter.${mod}"
+        $modTemplateFile = Get-Item -Path "$modSourceDir/Boxstarter.${mod}.psm1"
+        if (Test-Path $modTemplateFile) {
+            Write-Host "> compile $modTemplateFile" -ForegroundColor Magenta
+        }
+        else {
+            throw "expected module $modTemplateFile not found!"
+        }
+
+        $outDir = "$tempNuGetDirectory/Boxstarter.${mod}"
+        $modOutFile = "${outDir}/Boxstarter.${mod}.psm1"
+        if (-Not (Test-Path $outDir)) {
+            New-Item -ItemType Directory $outDir | Out-Null
+        }
+        $modTemplateContent = Get-Content -Path $modTemplateFile -Raw
+
+        # check if module has 'includes'
+        if ($modTemplateContent -match '(?<line># --- INCLUDE (?<pattern>.*))') {
+            $includedFiles = @()
+            $Matches | ForEach-Object { 
+                $includeLine = $_['line']
+                $includePattern = $_['pattern'].Trim()
+
+                $head = "#region RESOVED --- INCLUDE $includePattern"
+                $tail = "#endregion RESOVED --- INCLUDE $includePattern"
+
+                $modIncludes = Get-ChildItem -Path $modSourceDir | Where-Object { $_.Name -like $includePattern } | Sort-Object -Property Name | ForEach-Object {
+                    $includedFiles += $_.FullName # will need later on to _not_ copy these files
+                    "#region file $($_.Name)"
+                    Get-Content $_.FullName -Raw
+                    "#endregion file $($_.Name)"
+                } 
+                $modIncludes = $modIncludes -join "`n"
+                $includeContent = @($head, $modIncludes, $tail) -join "`n"
+                $modTemplateContent = $modTemplateContent.Replace($includeLine, $includeContent)
+            }
+
+            # write 'compiled' module
+            $modTemplateContent | Out-File -Path $modOutFile -Encoding utf8
+            # copy all other files that have not been included 
+            Get-ChildItem -Path $modSourceDir | Where-Object { 
+                ($_.FullName -notin $includedFiles) -And ($_.FullName -ne $modTemplateFile) 
+            } | ForEach-Object {
+                Copy-Item $_.FullName -Recurse -Destination $outDir -Exclude $exclude
+            }
+        } 
+        else {
+            Write-Host '! no INCLUDE instruction found, will copy everything' -ForegroundColor Red
+            Copy-Item -Path "$modSourceDir/*" -Recurse -Destination $outDir -Exclude $exclude
+        }
+    }
+    
 }
 
 Task Copy-PowerShellFiles -depends Clean-Artifacts, Compile-Modules {
     $tempNuGetDirectory = "$basedir/buildArtifacts/tempNuGetFolders"
-    $exclude = @('bin', 'obj', '*.pssproj')
 
     Copy-Item -Path $basedir/BuildScripts/chocolateyinstall.ps1 -Destination $tempNuGetDirectory
     Copy-Item -Path $basedir/BuildScripts/chocolateyUninstall.ps1 -Destination $tempNuGetDirectory
@@ -277,11 +332,6 @@ Task Copy-PowerShellFiles -depends Clean-Artifacts, Compile-Modules {
     Copy-Item -Path $basedir/BuildScripts/BoxstarterChocolateyInstall.ps1 -Destination $tempNuGetDirectory
     Copy-Item -Path $basedir/BoxstarterShell.ps1 -Destination $tempNuGetDirectory
     Copy-Item -Path $basedir/BuildScripts/VERIFICATION.txt -Destination $tempNuGetDirectory
-
-    # TODO: only copy required (psm/psd)1 files, subdirectories, helpfiles etc.
-    foreach ($mod in $boxstarterModules) {
-        Copy-Item -Path "$basedir/Boxstarter.$mod/*" -Recurse -Destination "$tempNuGetDirectory/Boxstarter.$mod" -Exclude $exclude
-    }
 }
 
 Task Sign-PowerShellFiles -depends Copy-PowerShellFiles {
