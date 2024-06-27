@@ -4,32 +4,32 @@ function Test-IsReleaseBuildOS {
     (-Not ($PSVersionTable.PSEdition -eq 'Core' -And $PSVersionTable.Platform -ne 'Windows'))
 }
 
-properties {
-    $baseDir = (Split-Path -Parent $psake.build_script_dir)
-    $counter = $buildCounter
+Properties {
+    $script:baseDir = (Split-Path -Parent $psake.build_script_dir)
+    $script:counter = $buildCounter
 
     $tagName = git tag -l --points-at HEAD
 
-    if ($tagName) {
+    $script:isTagges = if ($tagName) {
         Write-Host "Found tag ${'$'}tagName"
-        $isTagged = $true
+        $true
     }
     else {
         Write-Host 'No tag found for current commit'
-        $isTagged = $false
+        $false
     }
 
     $script:version = '1.0.0'
     $script:packageVersion = $version
     $script:informationalVersion = $version
     $script:changeset = 'abcdef'
-    $7z = if ( Test-IsReleaseBuildOS ) { "$env:chocolateyInstall/bin/7za.exe" } else { '7za' }
-    $nugetExe = "$env:ChocolateyInstall/bin/nuget.exe"
-    $msbuildExe = "${env:programFiles(x86)}/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/msbuild.exe"
-    $reportUnitExe = "$env:ChocolateyInstall/bin/ReportUnit.exe"
-    $gitVersionExe = if (Test-IsReleaseBuildOS) { "$env:ChocolateyInstall/lib/GitVersion.Portable/tools/gitversion.exe" } else { 'gitversion' }
+    $script:7z = if ( Test-IsReleaseBuildOS ) { "$env:chocolateyInstall/bin/7za.exe" } else { '7za' }
+    $script:nugetExe = "$env:ChocolateyInstall/bin/nuget.exe"
+    $script:msbuildExe = "${env:programFiles(x86)}/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/msbuild.exe"
+    $script:reportUnitExe = "$env:ChocolateyInstall/bin/ReportUnit.exe"
+    $script:gitVersionExe = if (Test-IsReleaseBuildOS) { "$env:ChocolateyInstall/lib/GitVersion.Portable/tools/gitversion.exe" } else { 'gitversion' }
 
-    $boxstarterModules = @(
+    $script:boxstarterModules = @(
         'Azure',
         'Bootstrapper',
         'Chocolatey',
@@ -47,7 +47,7 @@ Task Package -depends Clean-Artifacts, Version-Module, Get-ChocolateyNugetPkg, C
 Task All-Tests -depends Test, Integration-Test
 Task Quick-Deploy -depends Run-GitVersion, Build-Clickonce, Package, Publish-Clickonce
 
-task Run-GitVersion {
+Task Run-GitVersion {
     Write-Host 'Testing to see if running on TeamCity...'
 
     if ($env:TEAMCITY_VERSION) {
@@ -111,7 +111,7 @@ task Run-GitVersion {
     Write-Host "##teamcity[buildNumber '$packageVersion']"
 }
 
-task Create-ModuleZipForRemoting {
+Task Create-ModuleZipForRemoting {
     if (Test-Path "$baseDir/Boxstarter.Chocolatey/Boxstarter.zip") {
         Remove-Item "$baseDir/Boxstarter.Chocolatey/Boxstarter.zip" -Recurse -Force -ErrorAction SilentlyContinue
     }
@@ -133,14 +133,14 @@ task Create-ModuleZipForRemoting {
     Move-Item "$basedir/buildArtifacts/Boxstarter.zip" "$basedir/Boxstarter.Chocolatey/Boxstarter.zip"
 }
 
-task Build-ClickOnce -depends Install-MSBuild, Install-Win8SDK, Restore-NuGetPackages -precondition { Test-IsReleaseBuildOS } {
+Task Build-ClickOnce -depends Install-MSBuild, Install-Win8SDK, Restore-NuGetPackages -precondition { Test-IsReleaseBuildOS } {
     Update-AssemblyInfoFiles $version $changeset
-    exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Clean /v:minimal }
-    exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Build /v:minimal }
+    Exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Clean /v:minimal }
+    Exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Build /v:minimal }
 }
 
-task Publish-ClickOnce -depends Install-MSBuild {
-    exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Publish /v:minimal /p:ApplicationVersion="$version" }
+Task Publish-ClickOnce -depends Install-MSBuild {
+    Exec { .$msbuildExe "$baseDir/Boxstarter.ClickOnce/Boxstarter.WebLaunch.csproj" /t:Publish /v:minimal /p:ApplicationVersion="$version" }
     Remove-Item "$basedir/web/Launch" -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory "$basedir/web/Launch" | Out-Null
     Set-Content "$basedir/web/Launch/.gitattributes" -Value '* -text'
@@ -176,10 +176,10 @@ Task Integration-Test -depends Pack-Chocolatey, Create-ModuleZipForRemoting {
     Push-Location "$baseDir"
     $pesterDir = "$env:ChocolateyInstall/lib/Pester"
     if ($testName) {
-        exec { ."$pesterDir/tools/bin/Pester.bat" $baseDir/IntegrationTests -testName $testName }
+        Exec { ."$pesterDir/tools/bin/Pester.bat" $baseDir/IntegrationTests -testName $testName }
     }
     else {
-        exec { ."$pesterDir/tools/bin/Pester.bat" $baseDir/IntegrationTests }
+        Exec { ."$pesterDir/tools/bin/Pester.bat" $baseDir/IntegrationTests }
     }
     Pop-Location
 }
@@ -224,28 +224,28 @@ Task Package-DownloadZip -depends Clean-Artifacts {
         Remove-Item "$basedir/buildArtifacts/Boxstarter.*.zip" -Force
     }
 
-    exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/LICENSE.txt" }
-    exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/NOTICE.txt" }
-    exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/BuildScripts/bootstrapper.ps1" }
-    exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/BuildScripts/setup.bat" }
+    Exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/LICENSE.txt" }
+    Exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/NOTICE.txt" }
+    Exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/BuildScripts/bootstrapper.ps1" }
+    Exec { ."$7z" a -tzip "$basedir/buildArtifacts/Boxstarter.$packageVersion.zip" "$basedir/BuildScripts/setup.bat" }
 }
 
-task Install-MSBuild -precondition { Test-IsReleaseBuildOS } {
+Task Install-MSBuild -precondition { Test-IsReleaseBuildOS } {
     if (!(Test-Path "${env:programFiles(x86)}/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/msbuild.exe")) {
         choco install visualstudio2017buildtools -params '--add Microsoft.VisualStudio.Workload.WebBuildTools' --version=15.8.7.0 --no-progress -y
         choco install microsoft-build-tools --version=15.0.26320.2 --no-progress -y
     }
 }
 
-task Install-Win8SDK -precondition { Test-IsReleaseBuildOS } {
+Task Install-Win8SDK -precondition { Test-IsReleaseBuildOS } {
     if (!(Test-Path "$env:ProgramFiles/Windows Kits/8.1/bin/x64/signtool.exe")) { choco install windows-sdk-8.1 --version=8.100.26654.0 -y --no-progress }
 }
 
 Task Restore-NuGetPackages -precondition { Test-IsReleaseBuildOS } {
-    exec { .$nugetExe restore "$baseDir/Boxstarter.sln" -msbuildpath 'C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin' }
+    Exec { .$nugetExe restore "$baseDir/Boxstarter.sln" -msbuildpath 'C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin' }
 }
 
-task Get-ChocolateyNugetPkg {
+Task Get-ChocolateyNugetPkg {
     New-Item -ItemType Directory $basedir/Boxstarter.Chocolatey/chocolatey -ErrorAction SilentlyContinue | Out-Null
     $chocoVersion = '1.1.0'
     $srcUrl = "https://community.chocolatey.org/api/v2/package/chocolatey/$chocoVersion"
@@ -262,11 +262,11 @@ task Get-ChocolateyNugetPkg {
     }
 }
 
-task Compile-Modules {
+Task Compile-Modules {
     # TODO: implement join-script-to-psm1 logic
 }
 
-task Copy-PowerShellFiles -depends Clean-Artifacts, Compile-Modules {
+Task Copy-PowerShellFiles -depends Clean-Artifacts, Compile-Modules {
     $tempNuGetDirectory = "$basedir/buildArtifacts/tempNuGetFolders"
     $exclude = @('bin', 'obj', '*.pssproj')
 
@@ -284,7 +284,7 @@ task Copy-PowerShellFiles -depends Clean-Artifacts, Compile-Modules {
     }
 }
 
-task Sign-PowerShellFiles -depends Copy-PowerShellFiles {
+Task Sign-PowerShellFiles -depends Copy-PowerShellFiles {
     $timestampServer = 'http://timestamp.digicert.com'
     $certPfx = "$env:CHOCOLATEY_OFFICIAL_CERT"
     $certPasswordFile = "$env:CHOCOLATEY_OFFICIAL_CERT_PASSWORD"
@@ -309,7 +309,7 @@ task Sign-PowerShellFiles -depends Copy-PowerShellFiles {
 }
 
 function PackDirectory($path, $Version = $version) {
-    exec {
+    Exec {
         $relPath = $path.Replace($baseDir, '')
         $relPath = if ($relPath.StartsWith('/')) { $relPath.Substring(1) } else { $relPath }
         Get-ChildItem $path -Recurse -Include *.nuspec |
