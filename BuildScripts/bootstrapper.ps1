@@ -15,7 +15,7 @@ catch {
 
 function Get-Boxstarter {
     Param(
-        [string] $Version = "2.13.0",
+        [string] $Version = "3.1.0",
         [switch] $Force
     )
     if(!(Test-Admin)) {
