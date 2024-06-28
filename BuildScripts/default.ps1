@@ -306,7 +306,7 @@ Task Compile-Modules {
             }
 
             # write 'compiled' module
-            $modTemplateContent | Out-File -Path $modOutFile -Encoding utf8
+            $modTemplateContent | Out-File -FilePath $modOutFile -Encoding utf8
             # copy all other files that have not been included 
             Get-ChildItem -Path $modSourceDir | Where-Object { 
                 ($_.FullName -notin $includedFiles) -And ($_.FullName -ne $modTemplateFile) 
