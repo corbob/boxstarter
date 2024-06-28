@@ -4,4 +4,3 @@ Import-Module $unNormalized.FullName -global -DisableNameChecking -Force
 # we're not doing dot-sourcing anymore - "INCLUDE" all required files into this module during build
 # --- INCLUDE *.ps1
 
-Export-ModuleMember Enable-BoxstarterVM, Enable-BoxstarterVHD

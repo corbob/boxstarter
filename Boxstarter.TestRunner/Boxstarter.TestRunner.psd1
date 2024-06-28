@@ -28,7 +28,21 @@ NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1','..\Boxstarter.C
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+  'Get-BoxstarterDeployOptions', 
+  'Set-BoxstarterDeployOptions', 
+  'Test-BoxstarterPackage', 
+  'Install-BoxstarterScripts', 
+  'Get-BoxstarterPackage',
+  'Get-BoxstarterPackageNugetFeed', 
+  'Set-BoxstarterPackageNugetFeed', 
+  'Remove-BoxstarterPackageNugetFeed', 
+  'Publish-BoxstarterPackages', 
+  'Set-BoxstarterFeedAPIKey', 
+  'Publish-BoxstarterPackage', 
+  'Select-BoxstarterResultsToPublish', 
+  'Get-BoxstarterFeedAPIKey'
+)
 
 # Variables to export from this module
 VariablesToExport = '*'

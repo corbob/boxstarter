@@ -28,7 +28,19 @@ NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1')
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+  'Invoke-Boxstarter',
+  'Test-PendingReboot',
+  'Invoke-Reboot',
+  'Write-BoxstarterMessage',
+  'Start-TimedSection',
+  'Stop-TimedSection',
+  'Out-Boxstarter',
+  'Enter-BoxstarterLogable',
+  'Get-BoxstarterTempDir',
+  'Install-BoxstarterExtenson'
+)
+
 
 # Variables to export from this module
 VariablesToExport = '*'

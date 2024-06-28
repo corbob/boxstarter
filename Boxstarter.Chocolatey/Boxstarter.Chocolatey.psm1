@@ -18,26 +18,3 @@ if ($ExportCommands) {
     Export-ModuleMember cinst, cup, choco
 }
 
-Export-ModuleMember Get-BoxstarterConfig, `
-    Get-PackageRoot, `
-    Enable-BoxstarterClientRemoting, `
-    Enable-BoxstarterCredSSP, `
-    Export-BoxstarterVars, `
-    Install-ChocolateyInstallPackageOverride, `
-    Invoke-BoxstarterBuild, `
-    Invoke-BoxstarterFromTask, `
-    Invoke-Chocolatey, `
-    Invoke-ChocolateyBoxstarter, `
-    Install-BoxstarterPackage, `
-    New-BoxstarterPackage, `
-    New-PackageFromScript, `
-    Register-ChocolateyInterception, `
-    Resolve-VMPlugin, `
-    Set-BoxstarterConfig, `
-    Set-BoxstarterShare, `
-    Write-HostOverride
-
-Export-ModuleMember -Alias `
-    Enable-BoxstarterVM, `
-    Install-ChocolateyInstallPackage, `
-    Write-Host

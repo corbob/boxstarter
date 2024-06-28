@@ -31,7 +31,14 @@ NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1','..\Boxstarter.C
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+  'Enable-BoxstarterVM,'
+  'Get-AzureVMCheckpoint',
+  'Remove-AzureVMCheckpoint',
+  'Restore-AzureVMCheckpoint',
+  'Set-AzureVMCheckpoint',
+  'Test-VMStarted'
+)
 
 # Variables to export from this module
 VariablesToExport = '*'

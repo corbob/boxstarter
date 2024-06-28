@@ -4,13 +4,3 @@
 
 Import-Module (Join-Path $Boxstarter.BaseDir Boxstarter.WinConfig\Boxstarter.WinConfig.psd1) -global -DisableNameChecking
 
-Export-ModuleMember Invoke-Boxstarter, `
-                    Test-PendingReboot, `
-                    Invoke-Reboot, `
-                    Write-BoxstarterMessage, `
-                    Start-TimedSection, `
-                    Stop-TimedSection, `
-                    Out-Boxstarter, `
-                    Enter-BoxstarterLogable, `
-                    Get-BoxstarterTempDir, `
-                    Install-BoxstarterExtension

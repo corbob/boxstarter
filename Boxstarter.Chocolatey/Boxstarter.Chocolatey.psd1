@@ -25,8 +25,26 @@ DotNetFrameworkVersion = '2.0'
 NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1')
 
 # Functions to export from this module
-FunctionsToExport = '*'
-
+FunctionsToExport = @(
+  'Get-BoxstarterConfig',
+  'Get-PackageRoot', 
+  'Enable-BoxstarterClientRemoting', 
+  'Enable-BoxstarterCredSSP', 
+  'Export-BoxstarterVars', 
+  'Install-ChocolateyInstallPackageOverride', 
+  'Invoke-BoxstarterBuild', 
+  'Invoke-BoxstarterFromTask', 
+  'Invoke-Chocolatey', 
+  'Invoke-ChocolateyBoxstarter', 
+  'Install-BoxstarterPackage', 
+  'New-BoxstarterPackage', 
+  'New-PackageFromScript', 
+  'Register-ChocolateyInterception', 
+  'Resolve-VMPlugin', 
+  'Set-BoxstarterConfig', 
+  'Set-BoxstarterShare', 
+  'Write-HostOverride'
+)
 # Cmdlets to export from this module
 CmdletsToExport = '*'
 
@@ -34,7 +52,7 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 # Aliases to export from this module
-AliasesToExport = '*'
+AliasesToExport = @('Enable-BoxstarterVM', 'Install-ChocolateyInstallPackage', 'Write-Host')
 
 # List of all modules packaged with this module.
 # ModuleList = @()

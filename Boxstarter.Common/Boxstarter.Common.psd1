@@ -25,13 +25,35 @@ DotNetFrameworkVersion = '2.0'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = @(
+  'Confirm-Choice', 
+  'Create-BoxstarterTask', 
+  'Enter-BoxstarterLogable', 
+  'Enter-DotNet4', 
+  'Get-CurrentUser', 
+  'Get-HttpResource', 
+  'Get-IsMicrosoftUpdateEnabled', 
+  'Get-IsRemote', 
+  'Invoke-FromTask', 
+  'Invoke-RetriableScript', 
+  'Out-BoxstarterLog', 
+  'Log-BoxstarterMessage', 
+  'Remove-BoxstarterError', 
+  'Remove-BoxstarterTask', 
+  'Start-TimedSection', 
+  'Stop-TimedSection', 
+  'Test-Admin', 
+  'Write-BoxstarterLogo', 
+  'Write-BoxstarterMessage', 
+  'Get-BoxstarterTaskContextTempDir'
+)
+
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = 'Boxstarter'
 
 # Aliases to export from this module
 AliasesToExport = '*'
