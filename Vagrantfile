@@ -13,11 +13,11 @@ Vagrant.configure(2) do |config|
   # http://docs.vagrantup.com/v2/virtualbox/configuration.html
   config.vm.provider :virtualbox do |v, override|
     # Show the GUI
-    v.gui = true
+    v.gui = ENV['VM_GUI'] ? ENV['VM_GUI'].to_s.downcase == 'true' : true
     # 4GB RAM
-    v.customize ["modifyvm", :id, "--memory", "4096"]
+    v.memory = ENV['VM_MEMORY'] ? ENV['VM_MEMORY'].to_i : 4096
     # 2 CPUs
-    v.customize ["modifyvm", :id, "--cpus", "2"]
+    v.cpus = ENV['VM_CPU'] ? ENV['VM_CPU'].to_i : 2
     # Video RAM is 32 MB
     v.customize ["modifyvm", :id, "--vram", 32]
     # For better DNS resolution
@@ -37,9 +37,9 @@ Vagrant.configure(2) do |config|
   # https://technet.microsoft.com/en-us/library/dn798297(v=ws.11).aspx
   config.vm.provider :hyperv do |v, override|
     # 4GB RAM
-    v.memory = 4096
+    v.memory = ENV['VM_MEMORY'] ? ENV['VM_MEMORY'].to_i : 4096
     # 2 CPUs
-    v.cpus = 2
+    v.cpus = ENV['VM_CPU'] ? ENV['VM_CPU'].to_i : 2
     # The time in seconds to wait for the virtual machine to report an IP address
     v.ip_address_timeout = 130
     # Use differencing disk instead of cloning whole VHD
