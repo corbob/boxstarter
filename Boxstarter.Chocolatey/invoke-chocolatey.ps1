@@ -87,7 +87,9 @@ function Invoke-Chocolatey($chocoArgs) {
             
             $p = Start-Process @pargs
 
+            $dummy = $p.Handle # Cache the handle => https://github.com/PowerShell/PowerShell/issues/20400
             Wait-Process -Id $p.Id
+            Write-Verbose "choco process handle: $dummy"
             
             Write-BoxstarterMessage "BoxstarterWrapper::Run => $($p.ExitCode)" -Verbose
             [System.Environment]::ExitCode = $p.ExitCode
