@@ -4,7 +4,7 @@ Description = 'Provides common functionality used by multiple Boxstarter Modules
 ModuleToProcess = './Boxstarter.Common.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.13.0'
+ModuleVersion = '3.1.0'
 
 # ID used to uniquely identify this module
 GUID = 'bbdb3e8b-9daf-4c00-a553-4f3f88fb6e51'
@@ -25,13 +25,35 @@ DotNetFrameworkVersion = '2.0'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = @(
+  'Confirm-Choice', 
+  'Create-BoxstarterTask', 
+  'Enter-BoxstarterLogable', 
+  'Enter-DotNet4', 
+  'Get-CurrentUser', 
+  'Get-HttpResource', 
+  'Get-IsMicrosoftUpdateEnabled', 
+  'Get-IsRemote', 
+  'Invoke-FromTask', 
+  'Invoke-RetriableScript', 
+  'Out-BoxstarterLog', 
+  'Log-BoxstarterMessage', 
+  'Remove-BoxstarterError', 
+  'Remove-BoxstarterTask', 
+  'Start-TimedSection', 
+  'Stop-TimedSection', 
+  'Test-Admin', 
+  'Write-BoxstarterLogo', 
+  'Write-BoxstarterMessage', 
+  'Get-BoxstarterTaskContextTempDir'
+)
+
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = 'Boxstarter'
 
 # Aliases to export from this module
 AliasesToExport = '*'

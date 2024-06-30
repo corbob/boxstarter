@@ -4,7 +4,7 @@ Description = 'Provides Cmdlets that will install a boxstarter package on a Wind
 ModuleToProcess = './Boxstarter.Azure.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.13.0'
+ModuleVersion = '3.1.0'
 
 # ID used to uniquely identify this module
 GUID = 'bbdb3e8b-9daf-4c00-a553-4f3f88fb6e59'
@@ -31,7 +31,14 @@ NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1','..\Boxstarter.C
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+  'Enable-BoxstarterVM,'
+  'Get-AzureVMCheckpoint',
+  'Remove-AzureVMCheckpoint',
+  'Restore-AzureVMCheckpoint',
+  'Set-AzureVMCheckpoint',
+  'Test-VMStarted'
+)
 
 # Variables to export from this module
 VariablesToExport = '*'

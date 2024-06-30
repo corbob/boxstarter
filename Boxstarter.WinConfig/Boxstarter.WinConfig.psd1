@@ -4,7 +4,7 @@ Description = 'Provides Functions for customizing and configuring core windows s
 ModuleToProcess = './Boxstarter.WinConfig.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.13.0'
+ModuleVersion = '3.1.0'
 
 # ID used to uniquely identify this module
 GUID = 'bbdb3e8b-9daf-4c00-a553-4f3f88fb6e52'
@@ -28,7 +28,27 @@ NestedModules = @('..\Boxstarter.Common\Boxstarter.Common.psd1')
 FunctionsToExport = '*'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+  'Disable-UAC','Enable-UAC','Get-UAC',
+  'Disable-InternetExplorerESC',
+  'Disable-GameBarTips', 
+  'Get-ExplorerOptions', 
+  'Set-TaskbarSmall', 
+  'Install-WindowsUpdate', 
+  'Move-LibraryDirectory', 
+  'Enable-RemoteDesktop', 
+  'Set-ExplorerOptions', 
+  'Get-LibraryNames', 
+  'Update-ExecutionPolicy', 
+  'Enable-MicrosoftUpdate', 
+  'Disable-MicrosoftUpdate', 
+  'Set-StartScreenOptions', 
+  'Set-CornerNavigationOptions', 
+  'Set-WindowsExplorerOptions',
+  'Set-BoxstarterTaskbarOptions',
+  'Disable-BingSearch', 
+  'Set-BoxstarterPageFile'
+)
 
 # Variables to export from this module
 VariablesToExport = '*'
